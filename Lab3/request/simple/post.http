@@ -1,0 +1,6 @@
+POST http://localhost:8080/parking/cars
+Content-Type: application/json
+
+{
+  "carNumber": "BW1234CD"
+}
