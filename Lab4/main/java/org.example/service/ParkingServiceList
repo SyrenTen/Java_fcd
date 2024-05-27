@@ -1,0 +1,65 @@
+package org.example.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.example.model.Car;
+
+import org.example.repository.CarRepository;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public class ParkingServiceList implements ParkingService {
+    private final CarRepository carRepository;
+    private final int parkSize;
+
+    public ParkingServiceList(CarRepository carRepository) {
+        this.parkSize = 7;
+        this.carRepository = carRepository;
+    }
+
+    @Override
+    public boolean parkCar(Car car) {
+        if (carRepository.count() >= parkSize) {
+            throw new RuntimeException("Парковка повна");
+        }
+        if (carRepository.existsById(car.geterCarNumber())) {
+            return false;
+        }
+        carRepository.save(car);
+        System.out.println("List: Машина з номером " + car.geterCarNumber() + " припаркована");
+        return true;
+    }
+
+    @Override
+    public Car getCar(String carNumber) {
+        return carRepository.findById(carNumber).orElse(null);
+    }
+
+    @Override
+    public List<Car> getCarsList() {
+        return (List<Car>) carRepository.findAll();
+    }
+
+    @Override
+    public void printParkedCars() {
+        System.out.println("List: Припарковані машини:");
+//        for(Car car : carList) {
+//            if (car != null) {
+//                System.out.println(car);
+//            }
+//        }
+        for (Car car : carRepository.findAll()) {
+            System.out.println(car);
+        }
+    }
+
+    @Override
+    public void removeCar(String carNumber) {
+        // carList.removeIf(car -> car != null && car.geterCarNumber().equals(searchedCarNum));
+        if (carRepository.existsById(carNumber)) {
+            carRepository.deleteById(carNumber);
+            System.out.println("List: Машина " + carNumber + " прибрана");
+        }
+    }
+}
